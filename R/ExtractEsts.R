@@ -9,6 +9,19 @@ SummarySamps <- function(s, q = c(0.025, 0.25, 0.5, 0.75, 0.975)) {
     summ <- matrix(summ, nrow = 1, dimnames = list(NULL, names(summ)))
 }
 
+vapply_SummarySamps <- function(x, q, codename = NULL) {
+  res <- t(vapply(
+    as.data.frame.matrix(x, make.names = FALSE),
+    SummarySamps,
+    q = q, 
+    FUN.VALUE = numeric(2 + length(q))
+  ))
+  if (!is.null(codename)) {
+    rownames(res) <- paste0(codename, seq_len(nrow(res)))
+  }
+  res
+}
+
 #' Extract summary statistics
 #'
 #' Obtain summary statistics of each parameter from the BKMR fit
@@ -26,12 +39,11 @@ ExtractEsts <- function(fit, q = c(0.025, 0.25, 0.5, 0.75, 0.975), sel = NULL) {
     sigsq.eps <- SummarySamps(fit$sigsq.eps[sel], q = q)
     rownames(sigsq.eps) <- "sigsq.eps"
     
-    r <- t(apply(fit$r[sel, , drop = FALSE], 2, SummarySamps, q = q))
-    rownames(r) <- paste0("r", 1:nrow(r))
     
-    beta <- t(apply(fit$beta[sel, , drop = FALSE], 2, SummarySamps, q = q))
-    
-    lambda <- t(apply(fit$lambda[sel, ,drop = FALSE], 2, SummarySamps, q = q))
+    r <- vapply_SummarySamps(fit$r[sel, , drop = FALSE], q, "r")
+    beta <- vapply_SummarySamps(fit$beta[sel, , drop = FALSE], q)
+  
+    lambda <- vapply_SummarySamps(fit$lambda[sel, ,drop = FALSE], q)
     if (nrow(lambda) > 1) {
       rownames(lambda) <- paste0("lambda", 1:nrow(lambda))
     } else {
@@ -39,18 +51,15 @@ ExtractEsts <- function(fit, q = c(0.025, 0.25, 0.5, 0.75, 0.975), sel = NULL) {
     }
     
     if (fit$est.h) {
-      h <- t(apply(fit$h.hat[sel, ], 2, SummarySamps, q = q))
-      rownames(h) <- paste0("h", 1:nrow(h))
+      h <- vapply_SummarySamps(fit$h.hat[sel, ], q, "h")
     }
     
     if (!is.null(fit$hnew)) {
-      hnew <- t(apply(fit$hnew[sel, ], 2, SummarySamps, q = q))
-      rownames(hnew) <- paste0("hnew", 1:nrow(hnew))
+      hnew <- vapply_SummarySamps(fit$hnew[sel, ], q, "hnew")
     }
     
     if (!is.null(fit$ystar)) {
-      ystar <- t(apply(fit$ystar[sel, ], 2, SummarySamps, q = q))
-      rownames(ystar) <- paste0("ystar", 1:nrow(ystar))
+      ystar <- vapply_SummarySamps(fit$ystar[sel, ], q, "ystar")
     }
   }
   
