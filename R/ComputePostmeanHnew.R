@@ -56,8 +56,7 @@ ComputePostmeanHnew.approx <- function(fit, y = NULL, Z = NULL, X = NULL, Znew =
   Kpart <- makeKpart(r, Z)
   K <- exp(-Kpart)
   V <- diag(1, nrow(Z), nrow(Z)) + lambda[1]*K
-  cholV <- chol(V)
-  Vinv <- chol2inv(cholV)
+  Vinv <- chol2inv(chol(V))
   
   if (!is.null(Znew)) {
     # if(is.null(data.comps$knots)) {
