@@ -3,7 +3,7 @@
 #' @param q vector of quantiles
 #' @param s vector of posterior samples
 SummarySamps <- function(s, q = c(0.025, 0.25, 0.5, 0.75, 0.975)) {
-    qs <- quantile(s, q)
+    qs <- quantile(s, q, names = FALSE)
     names(qs) <- paste0("q_", 100*q)
     summ <- c(mean = mean(s), sd = sd(s), qs)
     summ <- matrix(summ, nrow = 1, dimnames = list(NULL, names(summ)))

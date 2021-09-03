@@ -1,3 +1,7 @@
+* Removed unuseful names' computation from the `quantile` call inside
+  `ExtractEsts` for a slightly but considerable speedup.
+  
+  
 # bkmr 0.2.0.9000
 
 ## Bug fixes
