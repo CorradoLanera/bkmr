@@ -249,7 +249,7 @@ h.update <- function(lambda, Vcomps, sigsq.eps, y, X, beta, r, Z, data.comps) {
 		h.postvar <- sigsq.eps*lambda*(K - lamKVinv%*%K)
 		h.postvar.sqrt <- try(chol(h.postvar), silent=TRUE)
 		if(inherits(h.postvar.sqrt, "try-error")) {
-			sigsvd <- svd(h.postvar)
+			sigsvd <- corpcor::fast.svd(h.postvar)
 			h.postvar.sqrt <- t(sigsvd$v %*% (t(sigsvd$u) * sqrt(sigsvd$d)))
 		}
 		hsamp <- h.postmean + crossprod(h.postvar.sqrt, rnorm(length(h.postmean)))
@@ -288,7 +288,7 @@ newh.update <- function(Z, Znew, Vcomps, lambda, sigsq.eps, r, y, X, beta, data.
 		mu.hnew <- lamK10Vinv %*% (y - X%*%beta)
 		root.Sigma.hnew <- try(chol(Sigma.hnew), silent=TRUE)
 		if(inherits(root.Sigma.hnew, "try-error")) {
-			sigsvd <- svd(Sigma.hnew)
+			sigsvd <- corpcor::fast.svd(Sigma.hnew)
 			root.Sigma.hnew <- t(sigsvd$v %*% (t(sigsvd$u) * sqrt(sigsvd$d)))
 		}
 		hsamp <- mu.hnew + crossprod(root.Sigma.hnew, rnorm(n1))

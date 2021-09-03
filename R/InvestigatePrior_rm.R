@@ -54,7 +54,7 @@ InvestigatePrior <- function(y, Z, X, ngrid = 50, q.seq = c(2, 1, 1/2, 1/4, 1/8,
       U <- try(t(chol(K)), silent=TRUE)
       # all.equal(K, U %*% t(U))
       if(inherits(U, "try-error")) {
-        sigsvd <- svd(K)
+        sigsvd <- corpcor::fast.svd(K)
         U <- t(sigsvd$v %*% (t(sigsvd$u) * sqrt(sigsvd$d)))
         # all.equal(K, U %*% t(U), check.attributes=FALSE)
       }
