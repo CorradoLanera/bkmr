@@ -47,7 +47,7 @@ makeVcomps <- function(r, lambda, Z, data.comps) {
     Rinv <- chol2inv(cholR)
     
     Vcomps <- list(
-      Vinv = diag(1, n0, n0) - lambda[1]*t(K10) %*% Rinv %*% K10,
+      Vinv = diag(n0) - lambda[1]*t(K10) %*% Rinv %*% K10,
       logdetVinv = 2*sum(log(diag(cholQ))) - 2*sum(log(diag(cholR))),
       cholR = cholR,
       Q = Q,

@@ -1,20 +1,20 @@
 beta.update <- function(X, Vinv, y, sigsq.eps) {
 	XVinv <- crossprod(X, Vinv)
-	Vbeta <- chol2inv(chol(XVinv %*% X))
+	Vbeta <- chol2inv(chol(crossprod(t(XVinv), X)))
 	cholVbeta <- chol(Vbeta)
-	betahat <- Vbeta %*% XVinv %*% y
+	betahat <- crossprod(t(crossprod(t(Vbeta), XVinv)), y)
 	n01 <- rnorm(ncol(X))
 	betahat + crossprod(sqrt(sigsq.eps)*cholVbeta, n01)
 }
 
 sigsq.eps.update <- function(y, X, beta, Vinv, a.eps=1e-3, b.eps=1e-3) {
-	mu <- y - X%*%beta
+	mu <- y - crossprod(t(X), beta)
 	prec.y <- rgamma(1, shape=a.eps + nrow(X)/2, rate=b.eps + 1/2*crossprod(mu, Vinv)%*%mu)
 	1/prec.y
 }
 
 ystar.update <- function(y, X, beta, h) {
-  mu <-  drop(h + X %*% beta)
+  mu <-  drop(h + crossprod(t(X), beta))
   lower <- ifelse(y == 1, 0, -Inf)
   upper <- ifelse(y == 0, 0,  Inf)
   samp <- truncnorm::rtruncnorm(1, a = lower, b = upper, mean = mu, sd = 1)
@@ -22,7 +22,7 @@ ystar.update <- function(y, X, beta, h) {
 }
 #' @importFrom tmvtnorm rtmvnorm
 ystar.update.noh <- function(y, X, beta, Vinv, ystar) {
-  mu <-  drop(X %*% beta)
+  mu <-  drop(crossprod(t(X), beta))
   lower <- ifelse(y == 1, 0, -Inf)
   upper <- ifelse(y == 0, 0,  Inf)
   samp <- tmvtnorm::rtmvnorm(1, mean = mu, H = Vinv, lower = lower, upper = upper, algorithm = "gibbs", start.value = ystar)
